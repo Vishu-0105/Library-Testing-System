@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ session.user_name }}{% endblock %}
+{% block content %}
+
+<div class="welcome-box">
+    <h2><i class="fas fa-tachometer-alt"></i> Welcome Back, {{ session.user_name }}!</h2>
+    <p>You have successfully accessed your personalized library dashboard with {{ session.user_role }} privileges.</p>
+</div>
+
+<div class="grid grid-3">
+    <div class="card">
+        <h3><i class="fas fa-user-circle" style="color: var(--primary-color);"></i> Member Profile</h3>
+        <table style="width: 100%;">
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Member ID:</td>
+                <td style="padding: 8px;"><code>{{ username }}</code></td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Full Name:</td>
+                <td style="padding: 8px;">{{ user_data.name }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Member Type:</td>
+                <td style="padding: 8px;">
+                    <span style="background: var(--primary-color); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
+                        {{ user_data.role }}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Email:</td>
+                <td style="padding: 8px;">{{ user_data.email }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Member Since:</td>
+                <td style="padding: 8px;">{{ user_data.get('member_id', 'N/A') }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-clock" style="color: var(--success-color);"></i> Session Information</h3>
+        <table style="width: 100%;">
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Login Status:</td>
+                <td style="padding: 8px;">
+                    <span style="color: var(--success-color); font-weight: bold;">
+                        <i class="fas fa-check-circle"></i> Active Session
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Login Time:</td>
+                <td style="padding: 8px;">{{ dashboard_data.login_time }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Last Visit:</td>
+                <td style="padding: 8px;">{{ dashboard_data.last_login }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Session Duration:</td>
+                <td style="padding: 8px;">Active</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-chart-bar" style="color: var(--warning-color);"></i> Library Statistics</h3>
+        <table style="width: 100%;">
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Access Level:</td>
+                <td style="padding: 8px;">{{ dashboard_data.user_role }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Total Books:</td>
+                <td style="padding: 8px;">{{ dashboard_data.total_books }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Available:</td>
+                <td style="padding: 8px;">{{ dashboard_data.available_books }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Total Members:</td>
+                <td style="padding: 8px;">{{ dashboard_data.total_members }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-books"></i> Recently Added Books</h3>
+    {% if recent_books %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in recent_books %}
+            <tr>
+                <td><strong>{{ book.title }}</strong></td>
+                <td>{{ book.author }}</td>
+                <td><code>{{ book.isbn }}</code></td>
+                <td>
+                    {% if book.available %}
+                        <span style="color: var(--success-color); font-weight: bold;">
+                            <i class="fas fa-check-circle"></i> Available
+                        </span>
+                    {% else %}
+                        <span style="color: var(--error-color); font-weight: bold;">
+                            <i class="fas fa-times-circle"></i> Checked Out
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+        <i class="fas fa-book-open"></i> No recent books to display
+    </p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-tasks"></i> Dashboard Features & Library Services</h3>
+    <div class="grid grid-2">
+        <div>
+            <h4><i class="fas fa-check-double" style="color: var(--success-color);"></i> Member Authentication</h4>
+            <div style="background: #f0fff4; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--success-color); margin: 1rem 0;">
+                <p><strong>✅ Library Access:</strong> Successfully authenticated and member session established</p>
+                <p><strong>✅ Role Verification:</strong> {{ user_data.role }} permissions granted</p>
+                <p><strong>✅ Session Security:</strong> Secure library session management active</p>
+                <p><strong>✅ Data Protection:</strong> Member information encrypted and protected</p>
+            </div>
+        </div>
+        
+        <div>
+            <h4><i class="fas fa-cogs" style="color: var(--info-color);"></i> Library System Features</h4>
+            <div style="background: #eff6ff; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--info-color); margin: 1rem 0;">
+                <p><strong>📚 Book Catalog:</strong> Access to complete digital library catalog</p>
+                <p><strong>🔍 Search System:</strong> Advanced book search and filter capabilities</p>
+                <p><strong>👤 Profile Management:</strong> Personal library account and preferences</p>
+                <p><strong>📱 Responsive Design:</strong> Optimized for all devices and browsers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-rocket"></i> Quick Library Actions</h3>
+    <div style="text-align: center;">
+        <a href="{{ url_for('profile') }}" class="btn btn-primary" style="margin: 0.5rem;">
+            <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="{{ url_for('catalog') }}" class="btn btn-success" style="margin: 0.5rem;">
+            <i class="fas fa-books"></i> Browse Catalog
+        </a>
+        <a href="{{ url_for('contact') }}" class="btn btn-primary" style="margin: 0.5rem;">
+            <i class="fas fa-envelope"></i> Contact Library
+        </a>
+        <a href="{{ url_for('about') }}" class="btn btn-primary" style="margin: 0.5rem;">
+            <i class="fas fa-info-circle"></i> About Library
+        </a>
+        <a href="{{ url_for('api_library_status') }}" class="btn btn-primary" style="margin: 0.5rem;" target="_blank">
+            <i class="fas fa-heartbeat"></i> System Status
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h3><i class="fas fa-vial"></i> Testing Validation Points</h3>
+        <div style="space-y: 1rem;">
+            <div style="background: #f0fff4; padding: 1rem; border-radius: 8px; border-left: 4px solid #22543d; margin-bottom: 1rem;">
+                <strong><i class="fas fa-check-circle" style="color: #22543d;"></i> Authentication Success</strong><br>
+                <small>Library member successfully logged in and session established with role assignment</small>
+            </div>
+            <div style="background: #eff6ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #2c5aa0; margin-bottom: 1rem;">
+                <strong><i class="fas fa-shield-alt" style="color: #2c5aa0;"></i> Protected Dashboard Access</strong><br>
+                <small>Dashboard accessible only after authentication - unauthorized access prevented</small>
+            </div>
+            <div style="background: #fefbeb; padding: 1rem; border-radius: 8px; border-left: 4px solid #d69e2e; margin-bottom: 1rem;">
+                <strong><i class="fas fa-user-cog" style="color: #d69e2e;"></i> Personalized Content</strong><br>
+                <small>Dashboard displays personalized library member content and role-specific features</small>
+            </div>
+            <div style="background: #fed7d7; padding: 1rem; border-radius: 8px; border-left: 4px solid #c53030;">
+                <strong><i class="fas fa-lock" style="color: #c53030;"></i> Session Security</strong><br>
+                <small>Secure library session management with logout functionality available</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-clipboard-check"></i> Selenium Test Scenarios</h3>
+        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px;">
+            <h4 style="color: var(--primary-color); margin-bottom: 1rem;">Library Dashboard Testing Checklist</h4>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> Direct dashboard access test (without login)</li>
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> Library member session validation and information display</li>
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> Navigation links and library action buttons</li>
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> Logout flow and session termination testing</li>
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> UI element presence and visibility verification</li>
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> Role-based content and feature verification</li>
+                <li style="margin: 0.5rem 0;"><i class="fas fa-check" style="color: #22543d;"></i> Responsive library dashboard functionality</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; text-align: center;">
+    <h3><i class="fas fa-trophy"></i> Library System Access Successful!</h3>
+    <p>You have successfully demonstrated advanced library management system testing capabilities:</p>
+    <div class="grid grid-2" style="margin-top: 1.5rem; text-align: left;">
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin: 0.5rem 0;"><i class="fas fa-medal" style="color: #fbbf24;"></i> Library member authentication and authorization</li>
+            <li style="margin: 0.5rem 0;"><i class="fas fa-medal" style="color: #fbbf24;"></i> Protected library dashboard access control</li>
+            <li style="margin: 0.5rem 0;"><i class="fas fa-medal" style="color: #fbbf24;"></i> Member session-based state management</li>
+        </ul>
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin: 0.5rem 0;"><i class="fas fa-medal" style="color: #fbbf24;"></i> Dynamic library content rendering</li>
+            <li style="margin: 0.5rem 0;"><i class="fas fa-medal" style="color: #fbbf24;"></i> Professional library interface design</li>
+            <li style="margin: 0.5rem 0;"><i class="fas fa-medal" style="color: #fbbf24;"></i> Comprehensive library security implementation</li>
+        </ul>
+    </div>
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('logout') }}" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; font-size: 1.1rem;">
+            <i class="fas fa-sign-out-alt"></i> Secure Library Logout
+        </a>
+    </div>
+</div>
+
+{% endblock %}

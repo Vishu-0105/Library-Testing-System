@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Contact - City Library Management System{% endblock %}
+{% block content %}
+
+<div class="welcome-box">
+    <h2><i class="fas fa-envelope"></i> Contact City Library</h2>
+    <p>Get in touch with our library staff for assistance, book requests, or general inquiries.</p>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+    <form method="POST" action="{{ url_for('contact') }}" class="card">
+        <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
+            <i class="fas fa-question-circle"></i> Library Inquiry Form
+        </h3>
+        
+        <div class="form-group">
+            <label for="name">
+                <i class="fas fa-user"></i> Full Name
+            </label>
+            <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                placeholder="Enter your full name" 
+                required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">
+                <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                placeholder="Enter your email address" 
+                required>
+        </div>
+        
+        <div class="form-group">
+            <label for="inquiry_type">
+                <i class="fas fa-tag"></i> Inquiry Type
+            </label>
+            <select id="inquiry_type" name="inquiry_type" required>
+                <option value="">Select inquiry type</option>
+                <option value="Book Request">Book Request</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Technical Support">Technical Support</option>
+                <option value="Membership">Membership Questions</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="message">
+                <i class="fas fa-comment"></i> Message
+            </label>
+            <textarea 
+                id="message" 
+                name="message" 
+                rows="5" 
+                placeholder="Enter your message or inquiry details..." 
+                required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-success" style="width: 100%; font-size: 1.1rem; padding: 1.2rem;">
+                <i class="fas fa-paper-plane"></i> Send Library Inquiry
+            </button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <p style="color: var(--text-secondary);">
+                <i class="fas fa-clock"></i> We typically respond within 24 hours
+            </p>
+        </div>
+    </form>
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h3><i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i> Library Location</h3>
+        <p><strong>City Public Library</strong></p>
+        <p>123 Knowledge Street</p>
+        <p>Education District</p>
+        <p>City, State 12345</p>
+        <p><i class="fas fa-phone"></i> Phone: (555) 123-BOOK</p>
+        <p><i class="fas fa-envelope"></i> Email: info@citylibrary.org</p>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-clock" style="color: var(--accent-color);"></i> Library Hours</h3>
+        <table style="width: 100%;">
+            <tr><td><strong>Monday - Thursday:</strong></td><td>8:00 AM - 9:00 PM</td></tr>
+            <tr><td><strong>Friday - Saturday:</strong></td><td>8:00 AM - 6:00 PM</td></tr>
+            <tr><td><strong>Sunday:</strong></td><td>12:00 PM - 5:00 PM</td></tr>
+            <tr><td><strong>Holidays:</strong></td><td>Closed</td></tr>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-question-circle"></i> Common Library Services</h3>
+    <div class="grid grid-3">
+        <div>
+            <h4 style="color: var(--success-color);"><i class="fas fa-book"></i> Book Services</h4>
+            <ul>
+                <li>Book checkout & renewals</li>
+                <li>Inter-library loans</li>
+                <li>Book reservations</li>
+                <li>New book requests</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color: var(--info-color);"><i class="fas fa-desktop"></i> Digital Services</h4>
+            <ul>
+                <li>Online catalog access</li>
+                <li>Digital resource downloads</li>
+                <li>Research database access</li>
+                <li>Computer & WiFi usage</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color: var(--warning-color);"><i class="fas fa-users"></i> Member Services</h4>
+            <ul>
+                <li>Library card registration</li>
+                <li>Account management</li>
+                <li>Fine payments</li>
+                <li>Program registration</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+    {% if session.username %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-tachometer-alt"></i> Back to Dashboard
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}

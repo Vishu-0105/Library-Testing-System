@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}City Library Management System{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Library Color Scheme - Forest & Academic */
+            --primary-color: #2d5016; /* Forest Green */
+            --secondary-color: #8b4513; /* Saddle Brown */
+            --accent-color: #1e3a5f; /* Deep Blue */
+            --success-color: #22543d; /* Dark Green */
+            --warning-color: #d69e2e; /* Golden Yellow */
+            --error-color: #c53030; /* Dark Red */
+            --info-color: #2c5aa0; /* Library Blue */
+            --dark-color: #2d3748; /* Dark Gray */
+            --light-color: #f7fafc; /* Off White */
+            --border-color: #e2e8f0; /* Light Gray */
+            --text-primary: #2d3748; /* Dark Gray */
+            --text-secondary: #718096; /* Medium Gray */
+            --shadow: 0 10px 25px rgba(45, 80, 22, 0.1);
+            --shadow-hover: 0 20px 40px rgba(45, 80, 22, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #f0f4f0 0%, #e6f3e6 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Library Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+        
+        /* Library Navigation */
+        .nav {
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.95), rgba(139, 69, 19, 0.95));
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Content Area */
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+        
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 2rem;
+        }
+        
+        .flash-success, .flash-error, .flash-info, .flash-warning {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .flash-success {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            color: var(--success-color);
+            border-left-color: var(--success-color);
+        }
+        
+        .flash-error {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: var(--error-color);
+            border-left-color: var(--error-color);
+        }
+        
+        .flash-info {
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            color: var(--info-color);
+            border-left-color: var(--info-color);
+        }
+        
+        .flash-warning {
+            background: linear-gradient(135deg, #fffff0, #fefcbf);
+            color: var(--warning-color);
+            border-left-color: var(--warning-color);
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #38a169);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #ed8936);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(45, 80, 22, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+        
+        .welcome-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 2rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .welcome-box h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Grid System */
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table tr:hover {
+            background-color: rgba(45, 80, 22, 0.05);
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-top: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav {
+                padding: 1rem;
+                justify-content: center;
+            }
+            
+            .nav a {
+                padding: 0.5rem 1rem;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book-open"></i> City Library Management System</h1>
+            <p class="subtitle">Advanced Digital Library Platform for Testing & Management</p>
+        </div>
+        
+        <nav class="nav">
+            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
+                <i class="fas fa-home"></i> Home
+            </a>
+            
+            {% if session.username %}
+                <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{{ url_for('catalog') }}" class="{% if request.endpoint == 'catalog' %}active{% endif %}">
+                    <i class="fas fa-books"></i> Catalog
+                </a>
+                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+                <a href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i> Logout ({{ session.username }})
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">
+                    <i class="fas fa-sign-in-alt"></i> Member Login
+                </a>
+            {% endif %}
+            
+            <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}active{% endif %}">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}">
+                <i class="fas fa-info-circle"></i> About
+            </a>
+        </nav>
+        
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-{{ category }}">
+                                {% if category == 'success' %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% elif category == 'error' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle"></i>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+        
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-book-open"></i> City Library System</h4>
+                    <p>Advanced library management platform designed for comprehensive testing and demonstration of modern library operations.</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-cogs"></i> Technology Stack</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li><i class="fab fa-python"></i> Python Flask Framework</li>
+                        <li><i class="fas fa-robot"></i> Selenium WebDriver</li>
+                        <li><i class="fas fa-vial"></i> Pytest Testing</li>
+                        <li><i class="fas fa-palette"></i> Modern CSS3 Design</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-graduation-cap"></i> Testing Features</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>Member Authentication</li>
+                        <li>Book Catalog Management</li>
+                        <li>Search & Filter Testing</li>
+                        <li>Form Validation</li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="border: none; height: 1px; background: rgba(255,255,255,0.2); margin: 2rem 0;">
+            <p style="opacity: 0.9;">
+                <i class="fas fa-calendar-alt"></i> {{ "Library Member" if session.username else "Visitor" }} | 
+                <i class="fas fa-code"></i> Library Testing Platform | 
+                <i class="fas fa-heart" style="color: #ff6b6b;"></i> Built for Educational Excellence
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Library-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Flash message animations
+            const flashMessages = document.querySelectorAll('.flash-success, .flash-error, .flash-info, .flash-warning');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.animation = 'slideIn 0.5s ease-out';
+                }, 100);
+            });
+            
+            // Auto-hide flash messages after 6 seconds
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.transition = 'opacity 0.5s ease-out';
+                    msg.style.opacity = '0';
+                    setTimeout(() => {
+                        msg.remove();
+                    }, 500);
+                }, 6000);
+            });
+            
+            // Form submission loading states
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

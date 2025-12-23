@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Book Catalog - City Library Management System{% endblock %}
+{% block content %}
+
+<div class="welcome-box">
+    <h2><i class="fas fa-books"></i> Digital Library Catalog</h2>
+    <p>Search and browse our comprehensive collection of books, journals, and digital resources.</p>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-search"></i> Search Library Catalog</h3>
+    <form method="POST" action="{{ url_for('catalog') }}" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="form-group" style="flex-grow: 1; margin-bottom: 0;">
+            <label for="search">
+                <i class="fas fa-book-open"></i> Search by Title, Author, or ISBN
+            </label>
+            <input 
+                type="text" 
+                id="search" 
+                name="search" 
+                placeholder="Enter book title, author name, or ISBN..."
+                value="{{ search_query if search_query else '' }}">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search Books
+            </button>
+        </div>
+    </form>
+    
+    {% if search_query %}
+    <div style="margin-top: 1rem; padding: 1rem; background: #eff6ff; border-radius: 8px; border-left: 4px solid var(--info-color);">
+        <p><strong>Search Results for:</strong> "{{ search_query }}"</p>
+        <a href="{{ url_for('catalog') }}" style="color: var(--info-color); text-decoration: none;">
+            <i class="fas fa-times"></i> Clear Search
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-list"></i> Library Collection
+        {% if books %}
+            <span style="color: var(--text-secondary); font-size: 1rem; font-weight: normal;">
+                ({{ books|length }} book{{ 's' if books|length != 1 else '' }} found)
+            </span>
+        {% endif %}
+    </h3>
+    
+    {% if books %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-book"></i> Title</th>
+                <th><i class="fas fa-user-edit"></i> Author</th>
+                <th><i class="fas fa-barcode"></i> ISBN</th>
+                <th><i class="fas fa-check-circle"></i> Availability</th>
+                <th><i class="fas fa-cog"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>
+                    <strong style="color: var(--primary-color);">{{ book.title }}</strong>
+                    <br><small style="color: var(--text-secondary);">ID: {{ book.id }}</small>
+                </td>
+                <td>{{ book.author }}</td>
+                <td><code>{{ book.isbn }}</code></td>
+                <td>
+                    {% if book.available %}
+                        <span style="color: var(--success-color); font-weight: bold;">
+                            <i class="fas fa-check-circle"></i> Available
+                        </span>
+                    {% else %}
+                        <span style="color: var(--error-color); font-weight: bold;">
+                            <i class="fas fa-times-circle"></i> Checked Out
+                        </span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if book.available %}
+                        <button class="btn btn-success" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="reserveBook({{ book.id }}, '{{ book.title }}')">
+                            <i class="fas fa-bookmark"></i> Reserve
+                        </button>
+                    {% else %}
+                        <button class="btn" style="background: var(--text-secondary); color: white; padding: 0.5rem 1rem; font-size: 0.9rem;" disabled>
+                            <i class="fas fa-clock"></i> Unavailable
+                        </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <h4>No Books Found</h4>
+        {% if search_query %}
+            <p>No books match your search for "{{ search_query }}".</p>
+            <p>Try different search terms or <a href="{{ url_for('catalog') }}">view all books</a>.</p>
+        {% else %}
+            <p>The library catalog is currently empty or unavailable.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h3><i class="fas fa-filter" style="color: var(--accent-color);"></i> Catalog Features</h3>
+        <ul>
+            <li><i class="fas fa-check"></i> <strong>Advanced Search:</strong> Search by title, author, or ISBN</li>
+            <li><i class="fas fa-check"></i> <strong>Real-time Availability:</strong> Live status updates</li>
+            <li><i class="fas fa-check"></i> <strong>Book Reservations:</strong> Reserve available books</li>
+            <li><i class="fas fa-check"></i> <strong>Detailed Information:</strong> Complete book metadata</li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h3><i class="fas fa-info-circle" style="color: var(--info-color);"></i> Search Tips</h3>
+        <ul>
+            <li><i class="fas fa-lightbulb"></i> Use partial titles for broader results</li>
+            <li><i class="fas fa-lightbulb"></i> Search by author's last name</li>
+            <li><i class="fas fa-lightbulb"></i> Use ISBN for exact book matches</li>
+            <li><i class="fas fa-lightbulb"></i> Leave search empty to see all books</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-chart-pie"></i> Library Collection Statistics</h3>
+    <div class="grid grid-3">
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0fff4, #c6f6d5); border-radius: 8px;">
+            <h4 style="color: var(--primary-color); font-size: 2rem; margin-bottom: 10px;">
+                <i class="fas fa-book"></i>
+            </h4>
+            <p><strong>{{ books|length if books else 0 }}</strong></p>
+            <small>Books in Current View</small>
+        </div>
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0fff4, #c6f6d5); border-radius: 8px;">
+            <h4 style="color: var(--success-color); font-size: 2rem; margin-bottom: 10px;">
+                <i class="fas fa-check-circle"></i>
+            </h4>
+            <p><strong>{{ books|selectattr('available')|list|length if books else 0 }}</strong></p>
+            <small>Available Books</small>
+        </div>
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #fed7d7, #feb2b2); border-radius: 8px;">
+            <h4 style="color: var(--error-color); font-size: 2rem; margin-bottom: 10px;">
+                <i class="fas fa-times-circle"></i>
+            </h4>
+            <p><strong>{{ books|rejectattr('available')|list|length if books else 0 }}</strong></p>
+            <small>Checked Out</small>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
+    {% if session.username %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+    {% endif %}
+    <a href="{{ url_for('contact') }}" class="btn btn-primary">
+        <i class="fas fa-envelope"></i> Request Book
+    </a>
+</div>
+
+<script>
+function reserveBook(bookId, bookTitle) {
+    // Simulate book reservation
+    if (confirm(`Reserve "${bookTitle}" for checkout?\n\nThis will add the book to your reservation list.`)) {
+        // Create temporary notification
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: var(--success-color); color: white; padding: 15px 25px;
+            border-radius: 8px; font-weight: bold; max-width: 300px;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        `;
+        notification.innerHTML = `
+            <i class="fas fa-check-circle"></i> 
+            Book Reserved!<br>
+            <small>"${bookTitle}" has been added to your reservations.</small>
+        `;
+        document.body.appendChild(notification);
+        
+        // Auto-remove notification
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 4000);
+        
+        // Disable the button
+        event.target.disabled = true;
+        event.target.innerHTML = '<i class="fas fa-bookmark"></i> Reserved';
+        event.target.style.background = 'var(--text-secondary)';
+    }
+}
+</script>
+
+{% endblock %}
